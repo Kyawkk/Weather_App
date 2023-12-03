@@ -3,14 +3,13 @@ package com.kyawzinlinn.core_network.model
 import com.google.gson.annotations.SerializedName
 
 data class ForecastByHour(
-    val cloud: Int,
     val condition: Condition,
-    @SerializedName("feelslike_c") val feelsLikeInCelsius: Double,
-    val humidity: Int,
-    val temp_c: Double,
+    @SerializedName("feelslike_c") val feelsLikeInCelsius: String,
+    val humidity: String,
+    @SerializedName("temp_c")val tempInCelsius: String,
     val time: String,
-    val uv: Double,
-    @SerializedName("wind_degree") val windDegree: Int,
+    val uv: String,
+    @SerializedName("wind_degree") val windDegree: String,
     @SerializedName("wind_dir") val windDirection: String,
-    @SerializedName("wind_mph") val windMilePerHour: Double
+    @SerializedName("wind_mph") val windSpeed: String
 )

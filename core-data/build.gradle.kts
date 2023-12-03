@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.kyawzinlinn.mylibrary"
+    namespace = "com.kyawzinlinn.core_data"
     compileSdk = 34
 
     defaultConfig {
@@ -38,6 +38,8 @@ android {
 dependencies {
     retrofit()
     daggerHilt()
+    moduleImplementation(":core-network")
+    moduleImplementation(":core-database")
 
     implementation(libs.core.ktx)
     implementation(libs.appcompat)

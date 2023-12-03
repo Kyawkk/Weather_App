@@ -4,6 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 data class ForecastDay(
     val date: String,
-    val astro: Astro,
-    val hour : List<ForecastByHour>
+    val hour : List<ForecastByHour>,
+    val day: Day
 )

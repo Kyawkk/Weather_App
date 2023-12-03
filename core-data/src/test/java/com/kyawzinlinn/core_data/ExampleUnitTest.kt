@@ -1,4 +1,4 @@
-package com.kyawzinlinn.mylibrary
+package com.kyawzinlinn.core_data
 
 import org.junit.Test
 

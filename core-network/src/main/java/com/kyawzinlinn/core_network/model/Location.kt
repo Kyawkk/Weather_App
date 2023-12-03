@@ -4,10 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Location(
     val country: String,
-    val lat: Double,
+    val lat: String,
     val localtime: String,
-    val lon: Double,
+    val lon: String,
     val name: String,
-    val region: String,
-    @SerializedName("tz_id") val timezoneId: String
+    val region: String
 )

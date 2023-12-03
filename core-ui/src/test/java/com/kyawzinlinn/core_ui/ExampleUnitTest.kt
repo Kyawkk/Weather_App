@@ -1,4 +1,4 @@
-package com.kyawzinlinn.domain
+package com.kyawzinlinn.core_ui
 
 import org.junit.Test
 

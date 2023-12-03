@@ -2,6 +2,9 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinAndroid)
+
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -34,6 +37,10 @@ android {
 }
 
 dependencies {
+    daggerHilt()
+    room()
+
+    moduleImplementation(":core-network")
 
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
@@ -41,4 +48,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+}
+
+kapt {
+    correctErrorTypes = true
 }
