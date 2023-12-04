@@ -6,7 +6,7 @@ data class ForecastByHour(
     val condition: Condition,
     @SerializedName("feelslike_c") val feelsLikeInCelsius: String,
     val humidity: String,
-    @SerializedName("temp_c")val tempInCelsius: String,
+    @SerializedName("temp_c")val tempInCelsius: Float,
     val time: String,
     val uv: String,
     @SerializedName("wind_degree") val windDegree: String,

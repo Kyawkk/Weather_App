@@ -4,6 +4,6 @@ import com.kyawzinlinn.core_database.entities.ForecastByHourEntity
 import kotlinx.coroutines.flow.Flow
 
 interface ForecastsByHourRepository {
-    fun getAllForecastsByHour() : Flow<List<ForecastByHourEntity>>
-    fun getForecastByHourByDate(date: String) : Flow<ForecastByHourEntity>
+    fun getForecastByHourById(id: String) : Flow<ForecastByHourEntity>
+    fun getForecastsByHourByDate(date: String) : Flow<List<ForecastByHourEntity>>
 }

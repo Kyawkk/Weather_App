@@ -31,6 +31,10 @@ fun DependencyHandler.retrofit(){
     implementation(Dependencies.okHttp)
 }
 
+fun DependencyHandler.coil(){
+    implementation(Dependencies.coil)
+}
+
 fun DependencyHandler.daggerHilt() {
     implementation(Dependencies.daggerHilt)
     implementation(Dependencies.hiltNavigationCompose)

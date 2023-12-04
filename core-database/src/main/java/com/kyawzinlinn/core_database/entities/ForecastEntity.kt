@@ -1,8 +1,10 @@
 package com.kyawzinlinn.core_database.entities
 
+import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.kyawzinlinn.core_database.util.convertDateToDay
 import com.kyawzinlinn.core_network.model.Location
 import com.kyawzinlinn.core_network.model.WeatherForecastResponse
 
@@ -15,6 +17,7 @@ data class ForecastEntity(
     @ColumnInfo("lon") val lon: String,
     @ColumnInfo("localTime") val localTime: String,
     @ColumnInfo("name") val name: String,
+    @ColumnInfo("icon") val icon: String,
     @ColumnInfo("region") val region: String,
     @ColumnInfo("humidity") val humidity: String,
     @ColumnInfo("temperature") val temperature: String,
@@ -32,10 +35,11 @@ fun WeatherForecastResponse.toForecastEntityList(): List<ForecastEntity>{
             country = this.location.country,
             lat = this.location.lat,
             lon = this.location.lon,
-            localTime = this.location.localtime,
+            localTime = it.date,
             name = this.location.name,
             region = this.location.region,
             humidity = it.day.humidity,
+            icon = it.day.condition.icon,
             temperature = it.day.temperature,
             condition = it.day.condition.text,
             chanceOfRain = it.day.chanceOfRain,

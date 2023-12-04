@@ -1,5 +1,7 @@
 package com.kyawzinlinn.core_network.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Forecast(
-    val forecastDay : List<ForecastDay>
+    @SerializedName("forecastday") val forecastDay : List<ForecastDay>
 )

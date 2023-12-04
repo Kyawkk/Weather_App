@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.kyawzinlinn.core_database.WeatherDatabase
+import com.kyawzinlinn.core_database.dao.CityDao
 import com.kyawzinlinn.core_database.dao.ForecastByHourDao
 import com.kyawzinlinn.core_database.dao.ForecastDao
 import dagger.Module
@@ -31,6 +32,9 @@ object DatabaseModule {
 
     @Provides
     fun providesForecastDao(weatherDatabase: WeatherDatabase): ForecastDao = weatherDatabase.forecastDao()
+
+    @Provides
+    fun providesCityDao(weatherDatabase: WeatherDatabase): CityDao = weatherDatabase.cityDao()
 
     @Provides
     fun providesForecastsByHourDao(weatherDatabase: WeatherDatabase): ForecastByHourDao = weatherDatabase.forecastsByHourDao()

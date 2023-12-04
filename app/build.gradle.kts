@@ -54,11 +54,18 @@ android {
 
 dependencies {
 
+    implementation(project(":core-ui"))
     composeNavigation()
     daggerHilt()
+    coil()
 
     moduleImplementation(":feature-location")
     moduleImplementation(":feature-weather")
+    moduleImplementation(":core-navigation")
+    moduleImplementation(":core-network")
+    moduleImplementation(":core-database")
+    moduleImplementation(":core-ui")
+    moduleImplementation(":core-design")
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
