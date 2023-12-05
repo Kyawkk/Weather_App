@@ -29,7 +29,6 @@ class WeatherViewModel @Inject constructor (
     val weatherUiState : StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
 
     fun resetWeatherForecastsByLocation() {
-        viewModelScope.coroutineContext.cancelChildren()
         _weatherUiState.update {
             it.copy(allForecasts = emptyFlow())
         }

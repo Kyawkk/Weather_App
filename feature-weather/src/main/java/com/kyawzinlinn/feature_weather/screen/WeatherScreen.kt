@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
 package com.kyawzinlinn.feature_weather.screen
@@ -14,19 +14,17 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.kyawzinlinn.core_database.entities.ForecastByHourEntity
 import com.kyawzinlinn.core_database.entities.ForecastEntity
 import com.kyawzinlinn.core_navigation.WeatherNavigationDestination
 import com.kyawzinlinn.core_network.util.Resource
+import com.kyawzinlinn.core_ui.ErrorScreen
 import com.kyawzinlinn.core_ui.SliderDotIndicator
 
 object WeatherHomeNavigation: WeatherNavigationDestination{
@@ -35,9 +33,10 @@ object WeatherHomeNavigation: WeatherNavigationDestination{
 
 @Composable
 fun WeatherScreen(
-    allWeatherForecasts : List<ForecastEntity>,
+    allWeatherForecastState : Resource<List<ForecastEntity>>,
     allForecastsByHour: List<ForecastByHourEntity>,
     pagerState: PagerState,
+    onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -45,37 +44,52 @@ fun WeatherScreen(
         modifier = modifier.fillMaxSize()
     ) {
         WeatherContentPager(
-            weatherForecasts = allWeatherForecasts,
+            weatherForecastState = allWeatherForecastState,
             pagerState = pagerState,
             allForecastsByHour = allForecastsByHour,
+            onRetry = onRetry
         )
     }
 }
 
 @Composable
 fun WeatherContentPager(
-    weatherForecasts: List<ForecastEntity>,
+    weatherForecastState: Resource<List<ForecastEntity>>,
     pagerState: PagerState,
+    onRetry: () -> Unit,
     allForecastsByHour: List<ForecastByHourEntity>,
     modifier: Modifier = Modifier
 ) {
+    var pageCount by remember { mutableStateOf(0) }
+    var weatherForecasts by remember { mutableStateOf(emptyList<ForecastEntity>()) }
 
-    Column {
-        Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-            SliderDotIndicator(
-                totalCount = weatherForecasts.size,
-                pagerState = pagerState
-            )
+    LaunchedEffect(weatherForecastState) {
+        if (weatherForecastState is Resource.Success) {
+            pageCount = weatherForecastState.data?.size ?: 0
+            weatherForecasts = weatherForecastState.data ?: emptyList()
         }
-        HorizontalPager(state = pagerState, modifier = modifier) { page ->
-            val forecast = weatherForecasts.get(page)
+    }
 
-            WeatherContent(
-                weatherForecast = forecast,
-                allForecastsByHour = allForecastsByHour,
-                onUpdateDate = {},
-                refreshForecastByHour = {}
-            )
+    if (weatherForecastState is Resource.Error) {
+        ErrorScreen(message = weatherForecastState.message, onRetry = onRetry)
+    } else {
+        Column {
+            Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                SliderDotIndicator(
+                    totalCount = pageCount,
+                    pagerState = pagerState
+                )
+            }
+
+            HorizontalPager(state = pagerState, modifier = modifier) { page ->
+                val forecast = weatherForecasts.get(page)
+
+                WeatherContent(
+                    weatherForecastState = weatherForecastState,
+                    weatherForecast = forecast,
+                    allForecastsByHour = allForecastsByHour
+                )
+            }
         }
     }
 }

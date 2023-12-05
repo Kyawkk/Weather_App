@@ -6,4 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ForecastRepository {
     suspend fun getAllForecasts(location: String) : Flow<Resource<List<ForecastEntity>>>
+
+    suspend fun deleteAll()
 }

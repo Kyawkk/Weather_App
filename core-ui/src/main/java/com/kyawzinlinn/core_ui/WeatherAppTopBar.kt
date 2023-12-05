@@ -3,9 +3,6 @@
 package com.kyawzinlinn.core_ui
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,15 +25,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.kyawzinlinn.weatherapp.ui.theme.poppinsFontFamily
 
 @Composable
 fun WeatherAppTopBar(
     backgroundColor: Color,
     title: String,
-    showAddCityIcon: Boolean = true,
-    showThemeIcon: Boolean = true,
+    isDay: Boolean,
+    isHomeScreen: Boolean,
     description: String = "",
     onNavigationIconClick: () -> Unit = {},
     onThemeIconClick: (Boolean) -> Unit = {},
@@ -48,7 +47,7 @@ fun WeatherAppTopBar(
     CenterAlignedTopAppBar(
         modifier = modifier,
         actions = {
-            if (showThemeIcon) {
+            if (isHomeScreen) {
                 IconButton(onClick = {
                     isDarkMode = !isDarkMode
                     onThemeIconClick(isDarkMode)
@@ -57,7 +56,7 @@ fun WeatherAppTopBar(
                         painter = if (isDarkMode) painterResource(R.drawable.light_mode) else painterResource(
                             R.drawable.dark_mode
                         ),
-                        tint = MaterialTheme.colorScheme.onPrimary,
+                        tint = if (isDay && isDarkMode) Color.Black else Color.White,
                         contentDescription = null
                     )
                 }
@@ -66,8 +65,8 @@ fun WeatherAppTopBar(
         navigationIcon = {
             IconButton(onClick = onNavigationIconClick) {
                 Icon(
-                    imageVector = if (showAddCityIcon) Icons.Default.Add else Icons.Default.ArrowBack,
-                    tint = if(showAddCityIcon) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground,
+                    imageVector = if (isHomeScreen) Icons.Default.Add else Icons.Default.ArrowBack,
+                    tint = if (isDay && isDarkMode) Color.Black else Color.White,
                     modifier = Modifier,
                     contentDescription = null
                 )
@@ -82,15 +81,18 @@ fun WeatherAppTopBar(
                 AnimatedVisibility(title.trim().isNotEmpty()) {
                     Text(
                         text = title,
-                        color = if (showAddCityIcon) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onBackground
+                        color = if (isDay && isDarkMode) Color.Black else Color.White
                     )
                 }
                 AnimatedVisibility(
-                    visible = showThemeIcon,
+                    visible = isHomeScreen,
                 ) {
                     AnimatedText(
                         text = description,
+                        fontFamily = poppinsFontFamily,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
+                        modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         color = MaterialTheme.colorScheme.onSecondary
                     )

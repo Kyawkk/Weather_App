@@ -5,14 +5,17 @@ package com.kyawzinlinn.feature_weather.screen
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -43,6 +46,9 @@ import coil.request.ImageRequest
 import com.kyawzinlinn.core_database.entities.ForecastByHourEntity
 import com.kyawzinlinn.core_database.entities.ForecastEntity
 import com.kyawzinlinn.core_database.util.getHourFromDateTime
+import com.kyawzinlinn.core_database.util.removeDecimalPlace
+import com.kyawzinlinn.core_network.util.Resource
+import com.kyawzinlinn.core_ui.AnimatedText
 import com.kyawzinlinn.core_ui.WeatherCard
 import com.kyawzinlinn.weatherapp.ui.theme.poppinsFontFamily
 
@@ -50,44 +56,73 @@ import com.kyawzinlinn.weatherapp.ui.theme.poppinsFontFamily
 fun WeatherContent(
     weatherForecast: ForecastEntity,
     allForecastsByHour: List<ForecastByHourEntity>,
-    onUpdateDate: (String) -> Unit,
-    refreshForecastByHour: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    weatherForecastState: Resource<List<ForecastEntity>>
 ) {
+    var temperature by remember { mutableStateOf("-") }
+    var condition by remember { mutableStateOf("-") }
+    var sunset by remember { mutableStateOf("-") }
+    var sunrise by remember { mutableStateOf("-") }
+    var humidity by remember { mutableStateOf("-") }
+    var realFeel by remember { mutableStateOf("-") }
+    var pressure by remember { mutableStateOf("-") }
+    var windSpeed by remember { mutableStateOf("-") }
+    var windDegree by remember { mutableStateOf("-") }
+    var windDirection by remember { mutableStateOf("-") }
+    var UV by remember { mutableStateOf("-") }
 
-   /* LaunchedEffect(true) {
-        onUpdateDate(weatherForecast.localTime)
-        refreshForecastByHour(weatherForecast.localTime)
-    }*/
+    LaunchedEffect(weatherForecastState) {
+        if(weatherForecastState is Resource.Success) {
+            temperature = weatherForecast.temperature.removeDecimalPlace() + "°"
+            condition = "\n\n${weatherForecast.condition} ${weatherForecast.maxTemperature}°/${weatherForecast.minTemperature}° "
+            sunrise = weatherForecast.sunrise
+            sunset = weatherForecast.sunset
+            realFeel = weatherForecast.temperature.removeDecimalPlace() + "°"
+            humidity = weatherForecast.humidity.removeDecimalPlace() + "%"
+            UV = weatherForecast.uv.removeDecimalPlace()
+            windSpeed = weatherForecast.windSpeed
+            windDirection = weatherForecast.windDirection
+            windDegree = weatherForecast.windDegree
+            pressure = weatherForecast.pressure
+        }
+    }
 
-    Column (
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(12.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(32.dp))
-        Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally){
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 textAlign = TextAlign.Center,
                 text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 96.sp
-                    )) {append(weatherForecast.temperature)}
                     withStyle(
                         style = SpanStyle(
-                            color = MaterialTheme.colorScheme.onPrimary
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 96.sp
+                        )
+                    ) { append(temperature) }
+
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 20.sp
                         )
                     ) {
-                        append("\n${weatherForecast.condition}")
+                        append(condition)
                     }
                 }
             )
-
+            Spacer(Modifier.height(12.dp))
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("https:${weatherForecast.icon.replace("64x64","128x128")}")
+                    .data("https:${weatherForecast.icon.replace("64x64", "128x128")}")
                     .crossfade(true)
                     .build(),
                 modifier = Modifier.scale(2f),
@@ -97,8 +132,79 @@ fun WeatherContent(
             Spacer(Modifier.height(32.dp))
             ForecastsByHourList(
                 allForecastsByHour = allForecastsByHour,
-                onForecastByHourItemClick = {}
+                onForecastByHourItemClick = {
+                    temperature =it.temperature.toString().removeDecimalPlace() + "°"
+                    condition = "\n\n${it.condition}"
+                    realFeel = it.realFeelTemp.removeDecimalPlace() + "°"
+                    humidity = it.humidity.removeDecimalPlace() + "%"
+                    UV = it.uv.removeDecimalPlace()
+                    pressure = it.pressure
+                    windSpeed = it.windSpeed
+                    windDegree = it.windDegree
+                    windDirection = it.windDirection
+                }
             )
+        }
+        Spacer(Modifier.height(12.dp))
+        Row (
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(intrinsicSize = IntrinsicSize.Max),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Column (
+                modifier = Modifier.weight(0.5f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                WeatherDetailsCard(
+                    forecasts = hashMapOf(
+                        "Sunrise" to sunrise,
+                        "Sunset" to sunset,
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+                WeatherDetailsCard(
+                    forecasts = hashMapOf(
+                        "Wind speed" to windSpeed,
+                        "Wind degree" to windDegree,
+                        "Wind direction" to windDirection ,
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Column (
+                modifier = Modifier
+                    .weight(0.5f)
+            ) {
+                WeatherDetailsCard(
+                    forecasts = hashMapOf(
+                        "Humidity" to humidity,
+                        "Real Feel" to realFeel,
+                        "UV" to UV,
+                        "Pressure" to pressure,
+                    ),
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WeatherDetailsCard(
+    forecasts : HashMap<String,String>,
+    modifier: Modifier = Modifier
+) {
+    WeatherCard (modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .padding(12.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
+            forecasts.toList().forEach {
+                SpecHorizontalItem(it.first,it.second)
+            }
         }
     }
 }
@@ -109,41 +215,77 @@ fun ForecastsByHourList(
     onForecastByHourItemClick: (ForecastByHourEntity) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    WeatherCard (modifier = modifier) {
-        Column (modifier= Modifier.animateContentSize()) {
+    var selectedIndex by remember { mutableStateOf(-1) }
+
+    WeatherCard(modifier = modifier) {
+        Column(modifier = Modifier.animateContentSize()) {
             Text(
-                text = "Today",
+                text = "24-hour forecast",
                 fontSize = 20.sp,
                 modifier = Modifier.padding(16.dp),
                 fontFamily = poppinsFontFamily,
                 fontWeight = FontWeight.Bold
             )
-            LazyRow (horizontalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)) {
-                items(allForecastsByHour) {
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp)
+            ) {
+                itemsIndexed(allForecastsByHour) {index, item ->
                     ForecastByHourItem(
-                        forecastByHourEntity = it,
-                        onItemClick = {onForecastByHourItemClick(it)}
+                        selected  = selectedIndex == index,
+                        forecastByHourEntity = item,
+                        onItemClick = {
+                            onForecastByHourItemClick(item)
+                            selectedIndex = index
+                        }
                     )
                 }
             }
         }
     }
 }
+@Composable
+fun SpecHorizontalItem(
+    name: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Row (
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = name,
+            fontSize = 14.sp,
+            fontFamily = poppinsFontFamily,
+            color = Color.LightGray
+        )
+        AnimatedText(
+            text = value,
+            fontSize = 16.sp,
+            modifier = Modifier,
+            fontFamily = poppinsFontFamily,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
+    }
+}
 
 @Composable
 fun ForecastByHourItem(
+    selected: Boolean,
     forecastByHourEntity: ForecastByHourEntity,
     onItemClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card (
+    Card(
         onClick = onItemClick,
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary
+            containerColor = if (selected) Color.White else MaterialTheme.colorScheme.onPrimary
         )
     ) {
-        Column (
+        Column(
             modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

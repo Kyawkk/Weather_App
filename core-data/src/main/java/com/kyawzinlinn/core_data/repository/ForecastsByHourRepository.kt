@@ -5,5 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ForecastsByHourRepository {
     fun getForecastByHourById(id: String) : Flow<ForecastByHourEntity>
+
+    suspend fun deleteAll()
     fun getForecastsByHourByDate(date: String) : Flow<List<ForecastByHourEntity>>
 }

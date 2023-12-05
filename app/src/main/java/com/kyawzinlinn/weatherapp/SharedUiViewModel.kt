@@ -17,28 +17,32 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState
 
+    fun updateErrorMessage(message: String) {
+        _uiState.update { it.copy(
+            errorMessage = message,
+            showAddLocationIcon = false,
+            description = ""
+        ) }
+    }
+
+    fun updateScreenStatus(isWeatherScreen: Boolean) {
+        _uiState.update {
+            it.copy(
+                isWeatherScreen = isWeatherScreen
+            )
+        }
+    }
+
     fun updateTitle(title: String) {
         _uiState.update { it.copy(title = title) }
     }
 
+    fun updateDayStatus(isDay: Boolean) {
+        _uiState.update { it.copy(isDay = isDay) }
+    }
+
     fun updateDescription(description: String) {
         _uiState.update { it.copy(description = description) }
-    }
-
-    fun updateAddLocationIconVisibilityStatus(showAddLocationIcon: Boolean) {
-        _uiState.update { it.copy(showAddLocationIcon = showAddLocationIcon) }
-    }
-
-    fun updateAddThemeIconVisibilityStatus(showThemeIcon: Boolean) {
-        _uiState.update { it.copy(showThemeIcon = showThemeIcon) }
-    }
-
-    fun updateAppBarColor(appBarColor: Color) {
-        _uiState.update { it.copy(appBarColor = appBarColor) }
-    }
-
-    fun updateAppTransparencyStatus(isTransparent: Boolean) {
-        _uiState.update { it.copy(isTransparent = isTransparent) }
     }
 
 }
@@ -46,8 +50,11 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
 data class SharedUiState(
     val title: String = DefaultConfig.TITLE,
     val description: String = DefaultConfig.DESCRIPTION,
+    val isDay: Boolean = true,
+    val isWeatherScreen: Boolean = false,
     val showAddLocationIcon: Boolean = DefaultConfig.SHOW_ADD_LOCATION_ICON,
     val appBarColor: Color = DefaultConfig.DEFAULT_APP_BAR_COLOR,
     val isTransparent: Boolean = DefaultConfig.IS_TRANSPARENT,
-    val showThemeIcon : Boolean = DefaultConfig.SHOW_THEME_ICON
+    val showThemeIcon : Boolean = DefaultConfig.SHOW_THEME_ICON,
+    val errorMessage: String = ""
 )

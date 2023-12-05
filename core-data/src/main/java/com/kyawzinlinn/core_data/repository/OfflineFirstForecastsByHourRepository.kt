@@ -9,5 +9,6 @@ class OfflineFirstForecastsByHourRepository (
 ) : ForecastsByHourRepository {
     override fun getForecastByHourById(id: String): Flow<ForecastByHourEntity> = forecastByHourDao.getAllForecastsByHourById(id)
 
+    override suspend fun deleteAll() = forecastByHourDao.deleteAll()
     override fun getForecastsByHourByDate(date: String): Flow<List<ForecastByHourEntity>> = forecastByHourDao.getForecastByHourByDate(date)
 }

@@ -1,5 +1,6 @@
 package com.kyawzinlinn.core_data.repository
 
+import android.util.Log
 import com.kyawzinlinn.core_database.dao.ForecastByHourDao
 import com.kyawzinlinn.core_database.dao.ForecastDao
 import com.kyawzinlinn.core_database.entities.ForecastEntity
@@ -10,40 +11,30 @@ import com.kyawzinlinn.core_network.util.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class OfflineFirstForecastRepository(
+class OfflineFirstForecastRepository @Inject constructor(
     private val networkDataSource: WeatherNetworkDataSource,
     private val forecastByHourDao: ForecastByHourDao,
     private val forecastDao: ForecastDao
 ) : ForecastRepository {
 
+    override suspend fun deleteAll() = forecastDao.deleteAll()
     override suspend fun getAllForecasts(location: String): Flow<Resource<List<ForecastEntity>>> = flow {
         //emit(Resource.Loading)
-        val cachedForecasts = forecastDao.getAllForecasts().first()
+        val cachedForecasts = forecastDao.getAllForecasts(location).first()
 
         if (cachedForecasts.isEmpty() || cachedForecasts.size == 0) emit(Resource.Loading)
         else emit(Resource.Success(cachedForecasts))
 
         try {
             val networkForecasts = networkDataSource.getWeatherForecasts(location)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                if (cachedForecasts.size != 0) {
-                    forecastDao.deleteAll()
-                    forecastByHourDao.deleteAll()
-                }
-                forecastDao.insertAllForecast(networkForecasts.toForecastEntityList())
-                forecastByHourDao.insertAllForecastsByHour(networkForecasts.toForecastByHourEntityList())
-            }
-
+            forecastDao.insertAllData(forecastByHourDao,networkForecasts.toForecastEntityList(), networkForecasts.toForecastByHourEntityList())
             emit(Resource.Success(networkForecasts.toForecastEntityList()))
+
         } catch (e: Exception) {
             e.printStackTrace()
             if (cachedForecasts.isEmpty() ) emit(Resource.Error(e.message.toString()))

@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.TextUnit
 @Composable
 fun AnimatedText(
     text: String,
+    modifier: Modifier = Modifier,
     durationMillis: Int = 400,
     color: Color = Color.Unspecified,
     fontSize: TextUnit = TextUnit.Unspecified,
@@ -51,7 +53,7 @@ fun AnimatedText(
     }) { newText ->
         Text(
             text = newText,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier,
             color = color,
             fontSize = fontSize,
             fontStyle = fontStyle,

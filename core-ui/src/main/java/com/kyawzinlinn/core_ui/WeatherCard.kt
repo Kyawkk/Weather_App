@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -22,7 +23,7 @@ fun WeatherCard(
     Card(
         modifier = modifier
             .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary.copy(0.2f)),
+        colors = CardDefaults.cardColors(containerColor = Color.Black.copy(0.2f)),
         elevation = CardDefaults.cardElevation(0.dp),
         shape = RoundedCornerShape(12.dp)
     ) {

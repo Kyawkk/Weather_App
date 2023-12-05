@@ -15,16 +15,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.kyawzinlinn.core_ui.ErrorScreen
+import com.kyawzinlinn.core_ui.R
 import com.kyawzinlinn.core_ui.WeatherAppTopBar
 import com.kyawzinlinn.feature_location.CityViewModel
 import com.kyawzinlinn.feature_location.navigation.SearchCityNavigationDestination
@@ -36,7 +35,7 @@ import com.kyawzinlinn.weatherapp.ui.theme.WeatherAppTheme
 fun WeatherApp(
     modifier: Modifier = Modifier
 ) {
-    val weatherViewModel : WeatherViewModel = hiltViewModel()
+    val weatherViewModel: WeatherViewModel = hiltViewModel()
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val cityViewModel: CityViewModel = hiltViewModel()
 
@@ -49,14 +48,10 @@ fun WeatherApp(
         description = uiState.description
     }
 
-    LaunchedEffect(Unit) {
-        weatherViewModel.getWeatherForecastsByLocation("Yangon")
-    }
-
     val darkTheme = isSystemInDarkTheme()
     var isDarkMode by rememberSaveable { mutableStateOf(darkTheme) }
 
-    WeatherAppTheme (darkTheme = isDarkMode) {
+    WeatherAppTheme(darkTheme = isDarkMode) {
         val navController = rememberNavController()
         Surface(
             modifier = modifier.fillMaxSize(),
@@ -66,34 +61,29 @@ fun WeatherApp(
                 topBar = {
                     Box {
                         WeatherAppTopBar(
-                            backgroundColor = uiState.appBarColor,
+                            backgroundColor = if (uiState.isWeatherScreen) Color.Black.copy(alpha = 0f) else MaterialTheme.colorScheme.background,
                             title = title,
                             description = description,
-                            showThemeIcon = uiState.showThemeIcon,
-                            showAddCityIcon = uiState.showAddLocationIcon,
+                            isDay = uiState.isDay,
+                            isHomeScreen = uiState.isWeatherScreen,
                             onThemeIconClick = {
                                 isDarkMode = it
                             },
                             onNavigationIconClick = {
-                                if (uiState.isTransparent) navController.navigate(SearchCityNavigationDestination.route)
+                                if (uiState.isWeatherScreen) navController.navigate(
+                                    SearchCityNavigationDestination.route
+                                )
                                 else navController.navigateUp()
                             }
                         )
                     }
                 }
             ) {
-                Box (modifier = Modifier.fillMaxSize()) {
-                    val gradient = Brush.linearGradient(
-                        colors = listOf(Color.Transparent, Color.Black),
-                        start = Offset.Zero,
-                        end = Offset.Infinite,
-                        tileMode = TileMode.Clamp
-                    )
-
-                    if (uiState.isTransparent) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (uiState.isWeatherScreen) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data("https://raw.githubusercontent.com/SidharthMudgil/mosam/main/app/src/main/res/drawable/bg_day.jpg")
+                                .data(if (uiState.isDay) R.drawable.day else R.drawable.night)
                                 .crossfade(true)
                                 .build(),
                             contentDescription = null,
@@ -101,9 +91,6 @@ fun WeatherApp(
                             modifier = modifier.fillMaxSize()
                         )
                     }
-                    /*Spacer(
-                        modifier = Modifier.fillMaxSize().background(brush = gradient)
-                    )*/
                     NavigationHost(
                         navController = navController,
                         sharedUiViewModel = sharedUiViewModel,

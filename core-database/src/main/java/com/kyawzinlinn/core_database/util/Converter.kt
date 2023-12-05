@@ -30,3 +30,7 @@ fun convertDateToDay(date: String): String {
 fun getHourFromDateTime(dateTime: String): String {
     return dateTime.split(" ").last()
 }
+
+fun String.removeDecimalPlace() : String {
+    return this.toFloat().toInt().toString()
+}

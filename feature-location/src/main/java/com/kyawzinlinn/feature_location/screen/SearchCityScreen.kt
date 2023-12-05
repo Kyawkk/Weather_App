@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.kyawzinlinn.feature_location.screen
 
@@ -15,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,12 +41,14 @@ import com.kyawzinlinn.core_network.model.City
 import com.kyawzinlinn.core_network.util.Resource
 import com.kyawzinlinn.core_ui.ErrorScreen
 import com.kyawzinlinn.core_ui.Loading
+import com.kyawzinlinn.core_ui.R
 import com.kyawzinlinn.core_ui.SearchBar
 
 @Composable
 fun SearchCityScreen(
     searchResults: Resource<List<City>>,
     savedCities: List<CityEntity>,
+    isDay: Boolean,
     onCityItemClick: (CityEntity) -> Unit,
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -84,7 +89,7 @@ fun SearchCityScreen(
                     onRetry = { onSearch(value) })
             }
         } else {
-                SavedCitiesList(savedCities = savedCities,onCityItemClick = onCityItemClick)
+                SavedCitiesList(isDay = isDay, savedCities = savedCities,onCityItemClick = onCityItemClick)
         }
     }
 }
@@ -116,6 +121,7 @@ fun SearchResultList(
 
 @Composable
 fun SavedCitiesList(
+    isDay: Boolean,
     savedCities: List<CityEntity>,
     onCityItemClick: (CityEntity) -> Unit,
     modifier: Modifier = Modifier
@@ -134,7 +140,7 @@ fun SavedCitiesList(
                 Box (contentAlignment = Alignment.CenterStart) {
                     AsyncImage(
                         model = ImageRequest.Builder(context)
-                            .data("https://raw.githubusercontent.com/SidharthMudgil/mosam/main/app/src/main/res/drawable/bg_day.jpg")
+                            .data(if (isDay) R.drawable.day else R.drawable.night)
                             .crossfade(true)
                             .build(),
                         contentDescription = null,
@@ -151,10 +157,12 @@ fun SavedCitiesList(
                             text = "${it.name}",
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
+                            color = Color.White,
                             modifier = Modifier.padding(horizontal = 16.dp)
                         )
                         Text(
                             text = it.country,
+                            color = Color.LightGray,
                             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                         )
                     }
