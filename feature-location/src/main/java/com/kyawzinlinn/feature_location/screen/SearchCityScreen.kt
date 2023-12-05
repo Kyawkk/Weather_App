@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class,
     ExperimentalMaterial3Api::class
 )
 
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -107,7 +109,12 @@ fun SearchCityScreen(
                     onRetry = { onSearch(value) })
             }
         } else {
-                SavedCitiesList(isDay = isDay, savedCities = savedCities,onCityItemClick = onCityItemClick, onDeleteCityItemClick = onDeleteCityItemClick)
+            SavedCitiesList(
+                isDay = isDay,
+                savedCities = savedCities,
+                onCityItemClick = onCityItemClick,
+                onDeleteCityItemClick = onDeleteCityItemClick
+            )
         }
     }
 }
@@ -147,7 +154,7 @@ fun SavedCitiesList(
 ) {
     val context = LocalContext.current
 
-    LazyColumn (
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(savedCities) {
@@ -156,7 +163,7 @@ fun SavedCitiesList(
                     .fillMaxWidth()
                     .height(100.dp),
                 onClick = { onCityItemClick(it) }) {
-                Box (contentAlignment = Alignment.CenterStart) {
+                Box(contentAlignment = Alignment.CenterStart) {
                     AsyncImage(
                         model = ImageRequest.Builder(context)
                             .data(if (isDay) R.drawable.day else R.drawable.night)
@@ -171,11 +178,13 @@ fun SavedCitiesList(
                             .fillMaxSize()
                             .background(Color.Black.copy(0.6f))
                     )
-                    Row (
-                        modifier = Modifier.fillMaxSize().background(Color.Gray),
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = "${it.name}",
                                 fontSize = 20.sp,
@@ -191,7 +200,10 @@ fun SavedCitiesList(
                                     .padding(horizontal = 16.dp)
                             )
                         }
-                        IconButton(onClick = {onDeleteCityItemClick(it)}){
+                        IconButton(
+                            onClick = { onDeleteCityItemClick(it) },
+                            modifier = Modifier.padding(16.dp)
+                        ) {
                             Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                         }
                     }

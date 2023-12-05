@@ -2,6 +2,7 @@
 
 package com.kyawzinlinn.weatherapp.ui.navigation
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -75,9 +76,11 @@ fun NavigationHost(
             LaunchedEffect(forecastState) {
                 when (forecastState) {
                     is Resource.Loading -> {
-                        sharedUiViewModel.updateScreenStatus(isWeatherScreen = true)
+                        sharedUiViewModel.apply {
+                            updateScreenStatus(isWeatherScreen = true)
+                            updateDescription("Updating...")
+                        }
                     }
-
                     is Resource.Success -> {
                         title =
                             (forecastState as Resource.Success<List<ForecastEntity>>).data?.get(0)?.name
@@ -93,6 +96,7 @@ fun NavigationHost(
                     }
 
                     is Resource.Error -> {
+                        sharedUiViewModel.updateDescription("")
                         sharedUiViewModel.updateScreenStatus(isWeatherScreen = false)
                     }
                 }
@@ -141,6 +145,7 @@ fun NavigationHost(
                 onCityItemClick = {
                     cityViewModel.addCity(it)
                     weatherViewModel.getWeatherForecastsByLocation(it.name)
+                    Log.d("TAG", "CityName: ${it.name}")
                     navController.navigate(WeatherHomeNavigation.route)
                 })
         }

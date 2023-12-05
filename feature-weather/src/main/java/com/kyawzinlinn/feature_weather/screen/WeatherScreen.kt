@@ -1,9 +1,11 @@
 @file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
-    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
 )
 
 package com.kyawzinlinn.feature_weather.screen
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,14 +54,40 @@ fun WeatherScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        WeatherContentPager(
-            weatherForecastState = allWeatherForecastState,
-            pagerState = pagerState,
-            isDay = isDay,
-            allForecastsByHour = allForecastsByHour,
-            onRetry = onRetry,
-            refreshForecastsByHour = refreshForecastsByHour
-        )
+
+        when (allWeatherForecastState) {
+            is Resource.Loading -> {}
+            is Resource.Success -> {
+                if (allWeatherForecastState.data?.size != 0) {
+                    WeatherContentPager(
+                        weatherForecastState = allWeatherForecastState,
+                        pagerState = pagerState,
+                        isDay = isDay,
+                        allForecastsByHour = allForecastsByHour,
+                        refreshForecastsByHour = refreshForecastsByHour
+                    )
+                }
+            }
+            is Resource.Error -> {
+                Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(all = 8.dp),
+                        action = {
+                            TextButton(
+                                onClick = onRetry
+                            ) {
+                                Text("Retry")
+                            }
+                        }
+                    ) {
+                        Text(text = allWeatherForecastState.message)
+                    }
+                }
+            }
+        }
+
+
     }
 }
 
@@ -68,7 +96,6 @@ fun WeatherContentPager(
     weatherForecastState: Resource<List<ForecastEntity>>,
     pagerState: PagerState,
     isDay: Boolean,
-    onRetry: () -> Unit,
     refreshForecastsByHour: (String) -> Unit,
     allForecastsByHour: List<ForecastByHourEntity>,
     modifier: Modifier = Modifier
@@ -83,47 +110,29 @@ fun WeatherContentPager(
         }
     }
 
-    if (weatherForecastState is Resource.Error) {
-        Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-            Snackbar(
-                modifier = Modifier
-                    .padding(all = 8.dp),
-                action = {
-                    TextButton(
-                        onClick = onRetry
-                    ) {
-                        Text("Retry")
-                    }
-                }
-            ) {
-                Text(text = weatherForecastState.message)
-            }
+    Column {
+        Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            SliderDotIndicator(
+                totalCount = pageCount,
+                pagerState = pagerState
+            )
         }
-    } else {
-        Column {
-            Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                SliderDotIndicator(
-                    totalCount = pageCount,
-                    pagerState = pagerState
-                )
-            }
 
-            HorizontalPager(state = pagerState, modifier = modifier) { page ->
-                val forecast = weatherForecasts.get(page)
+        HorizontalPager(state = pagerState, modifier = modifier) { page ->
+            val forecast = weatherForecasts.get(page)
 
-                LaunchedEffect(page){
-                    withContext(Dispatchers.IO){
-                        if (weatherForecasts.size != 0) refreshForecastsByHour(weatherForecasts.get(page).date)
-                    }
+            LaunchedEffect(page){
+                withContext(Dispatchers.IO){
+                    if (weatherForecasts.size != 0) refreshForecastsByHour(weatherForecasts.get(page).date)
                 }
-
-                WeatherContent(
-                    weatherForecastState = weatherForecastState,
-                    weatherForecast = forecast,
-                    isDay = isDay,
-                    allForecastsByHour = allForecastsByHour
-                )
             }
+
+            WeatherContent(
+                weatherForecastState = weatherForecastState,
+                weatherForecast = forecast,
+                isDay = isDay,
+                allForecastsByHour = allForecastsByHour
+            )
         }
     }
 }
