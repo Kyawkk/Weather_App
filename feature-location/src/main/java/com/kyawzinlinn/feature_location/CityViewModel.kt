@@ -33,6 +33,12 @@ class CityViewModel @Inject constructor(
         }
     }
 
+    fun deleteCity(cityEntity: CityEntity) {
+        viewModelScope.launch {
+            cityRepository.deleteCity(cityEntity)
+        }
+    }
+
     fun searchCity(query: String) {
         viewModelScope.launch {
             _cityUiState.update {

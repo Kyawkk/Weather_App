@@ -3,6 +3,7 @@
 package com.kyawzinlinn.feature_weather.screen
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -55,10 +56,14 @@ import com.kyawzinlinn.weatherapp.ui.theme.poppinsFontFamily
 @Composable
 fun WeatherContent(
     weatherForecast: ForecastEntity,
+    isDay : Boolean,
     allForecastsByHour: List<ForecastByHourEntity>,
     modifier: Modifier = Modifier,
     weatherForecastState: Resource<List<ForecastEntity>>
 ) {
+
+    val isDarkMode = isSystemInDarkTheme()
+
     var temperature by remember { mutableStateOf("-") }
     var condition by remember { mutableStateOf("-") }
     var sunset by remember { mutableStateOf("-") }
@@ -83,7 +88,7 @@ fun WeatherContent(
             windSpeed = weatherForecast.windSpeed
             windDirection = weatherForecast.windDirection
             windDegree = weatherForecast.windDegree
-            pressure = weatherForecast.pressure
+            pressure = weatherForecast.pressure + " hPa"
         }
     }
 
@@ -103,14 +108,14 @@ fun WeatherContent(
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = if (isDay && isDarkMode) Color.Black else Color.White,
                             fontSize = 96.sp
                         )
                     ) { append(temperature) }
 
                     withStyle(
                         style = SpanStyle(
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = if (isDay && isDarkMode) Color.Black else Color.White,
                             fontWeight = FontWeight.Medium,
                             fontSize = 20.sp
                         )
@@ -138,7 +143,7 @@ fun WeatherContent(
                     realFeel = it.realFeelTemp.removeDecimalPlace() + "°"
                     humidity = it.humidity.removeDecimalPlace() + "%"
                     UV = it.uv.removeDecimalPlace()
-                    pressure = it.pressure
+                    pressure = it.pressure + " hPa"
                     windSpeed = it.windSpeed
                     windDegree = it.windDegree
                     windDirection = it.windDirection

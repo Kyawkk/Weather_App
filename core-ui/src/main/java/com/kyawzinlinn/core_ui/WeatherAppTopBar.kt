@@ -63,13 +63,15 @@ fun WeatherAppTopBar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = onNavigationIconClick) {
-                Icon(
-                    imageVector = if (isHomeScreen) Icons.Default.Add else Icons.Default.ArrowBack,
-                    tint = if (isDay && isDarkMode) Color.Black else Color.White,
-                    modifier = Modifier,
-                    contentDescription = null
-                )
+            if(isHomeScreen) {
+                IconButton(onClick = onNavigationIconClick) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        tint = if (isDay && isDarkMode) Color.Black else Color.White,
+                        modifier = Modifier,
+                        contentDescription = null
+                    )
+                }
             }
         },
         title = {

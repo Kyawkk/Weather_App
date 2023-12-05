@@ -36,6 +36,9 @@ class WeatherViewModel @Inject constructor (
 
     fun getWeatherForecastsByLocation(location: String) {
         viewModelScope.launch {
+            _weatherUiState.update {
+                it.copy(allForecastsByHour = emptyFlow())
+            }
             val forecasts = forecastRepository.getAllForecasts(location)
             _weatherUiState.update {
                 it.copy(allForecasts = forecasts)

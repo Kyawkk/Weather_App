@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,12 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.kyawzinlinn.core_database.entities.ForecastByHourEntity
 import com.kyawzinlinn.core_database.entities.ForecastEntity
 import com.kyawzinlinn.core_navigation.WeatherNavigationDestination
 import com.kyawzinlinn.core_network.util.Resource
 import com.kyawzinlinn.core_ui.ErrorScreen
 import com.kyawzinlinn.core_ui.SliderDotIndicator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 object WeatherHomeNavigation: WeatherNavigationDestination{
     override val route: String = "weather_home"
@@ -36,6 +43,8 @@ fun WeatherScreen(
     allWeatherForecastState : Resource<List<ForecastEntity>>,
     allForecastsByHour: List<ForecastByHourEntity>,
     pagerState: PagerState,
+    isDay: Boolean,
+    refreshForecastsByHour: (String) -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -46,8 +55,10 @@ fun WeatherScreen(
         WeatherContentPager(
             weatherForecastState = allWeatherForecastState,
             pagerState = pagerState,
+            isDay = isDay,
             allForecastsByHour = allForecastsByHour,
-            onRetry = onRetry
+            onRetry = onRetry,
+            refreshForecastsByHour = refreshForecastsByHour
         )
     }
 }
@@ -56,7 +67,9 @@ fun WeatherScreen(
 fun WeatherContentPager(
     weatherForecastState: Resource<List<ForecastEntity>>,
     pagerState: PagerState,
+    isDay: Boolean,
     onRetry: () -> Unit,
+    refreshForecastsByHour: (String) -> Unit,
     allForecastsByHour: List<ForecastByHourEntity>,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +84,21 @@ fun WeatherContentPager(
     }
 
     if (weatherForecastState is Resource.Error) {
-        ErrorScreen(message = weatherForecastState.message, onRetry = onRetry)
+        Box (modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+            Snackbar(
+                modifier = Modifier
+                    .padding(all = 8.dp),
+                action = {
+                    TextButton(
+                        onClick = onRetry
+                    ) {
+                        Text("Retry")
+                    }
+                }
+            ) {
+                Text(text = weatherForecastState.message)
+            }
+        }
     } else {
         Column {
             Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -84,9 +111,16 @@ fun WeatherContentPager(
             HorizontalPager(state = pagerState, modifier = modifier) { page ->
                 val forecast = weatherForecasts.get(page)
 
+                LaunchedEffect(page){
+                    withContext(Dispatchers.IO){
+                        if (weatherForecasts.size != 0) refreshForecastsByHour(weatherForecasts.get(page).date)
+                    }
+                }
+
                 WeatherContent(
                     weatherForecastState = weatherForecastState,
                     weatherForecast = forecast,
+                    isDay = isDay,
                     allForecastsByHour = allForecastsByHour
                 )
             }

@@ -24,7 +24,6 @@ class OfflineFirstForecastRepository @Inject constructor(
 
     override suspend fun deleteAll() = forecastDao.deleteAll()
     override suspend fun getAllForecasts(location: String): Flow<Resource<List<ForecastEntity>>> = flow {
-        //emit(Resource.Loading)
         val cachedForecasts = forecastDao.getAllForecasts(location).first()
 
         if (cachedForecasts.isEmpty() || cachedForecasts.size == 0) emit(Resource.Loading)
