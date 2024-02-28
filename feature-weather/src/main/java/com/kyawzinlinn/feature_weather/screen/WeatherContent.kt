@@ -2,6 +2,7 @@
 
 package com.kyawzinlinn.feature_weather.screen
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,6 +76,7 @@ fun WeatherContent(
     var windDegree by remember { mutableStateOf("-") }
     var windDirection by remember { mutableStateOf("-") }
     var UV by remember { mutableStateOf("-") }
+    var weatherIconUrl by remember { mutableStateOf("") }
     var allForecasts = remember { mutableStateListOf<ForecastByHourEntity?>(ForecastByHourEntity()) }
 
     LaunchedEffect(allForecastsByHour) {
@@ -81,8 +84,16 @@ fun WeatherContent(
         allForecasts.addAll(allForecastsByHour)
     }
 
+    LaunchedEffect(weatherIconUrl) {
+        //Log.d("TAG", "WeatherContent: $weatherIconUrl")
+    }
+
     LaunchedEffect(weatherForecast) {
         if (weatherForecast != null) {
+
+            weatherIconUrl = weatherForecast.icon
+            Log.d("TAG", "WeatherContent: $weatherIconUrl")
+
             temperature = weatherForecast.temperature.removeDecimalPlace() + "°"
             condition =
                 "\n\n${weatherForecast.condition} ${weatherForecast.maxTemperature}°/${weatherForecast.minTemperature}° "
@@ -107,7 +118,9 @@ fun WeatherContent(
     ) {
         Spacer(Modifier.height(32.dp))
         Column(
-            modifier = Modifier.fillMaxWidth().animateContentSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
@@ -134,7 +147,7 @@ fun WeatherContent(
             Spacer(Modifier.height(12.dp))
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data("https:${weatherForecast?.icon?.replace("64x64", "128x128")}")
+                    .data("https:${weatherIconUrl.replace("64x64", "128x128")}")
                     .crossfade(true)
                     .build(),
                 modifier = Modifier.scale(2f),
@@ -146,6 +159,7 @@ fun WeatherContent(
                 allForecastsByHour = allForecasts.map { it },
                 onForecastByHourItemClick = {
                     if (it != null) {
+                        weatherIconUrl = it.icon
                         temperature = it.temperature.toString().removeDecimalPlace() + "°"
                         condition = "\n\n${it.condition}"
                         realFeel = it.realFeelTemp.removeDecimalPlace() + "°"
@@ -229,7 +243,7 @@ fun ForecastsByHourList(
     onForecastByHourItemClick: (ForecastByHourEntity?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(-1) }
 
     WeatherCard(modifier = modifier) {
         Column(modifier = Modifier.animateContentSize()) {

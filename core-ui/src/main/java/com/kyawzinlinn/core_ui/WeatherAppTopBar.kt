@@ -84,7 +84,7 @@ fun WeatherAppTopBar(
                 AnimatedVisibility(title.trim().isNotEmpty()) {
                     Text(
                         text = title,
-                        color = if (isDay && isDarkMode) Color.Black else Color.White
+                        //color = if (isDay && isDarkMode) Color.Black else Color.White
                     )
                 }
                 AnimatedVisibility(
