@@ -1,4 +1,4 @@
-package com.kyawzinlinn.core_network.retrofit
+package com.kyawzinlinn.core_network.util.retrofit
 
 object BuildConfig {
     const val BASE_URL = "https://api.weatherapi.com/v1/"

@@ -1,5 +1,6 @@
 package com.kyawzinlinn.weatherapp
 
+import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,6 +15,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedUiViewModel @Inject constructor() : ViewModel() {
+
+    companion object{
+        const val TAG = "SharedUiViewModel"
+    }
+
     private val _uiState = MutableStateFlow(SharedUiState())
     val uiState: StateFlow<SharedUiState> = _uiState
 
@@ -34,6 +40,7 @@ class SharedUiViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateTitle(title: String) {
+        Log.d(TAG, "updateTitle: $title")
         _uiState.update { it.copy(title = title) }
     }
 

@@ -1,4 +1,4 @@
-package com.kyawzinlinn.core_network.retrofit
+package com.kyawzinlinn.core_network.util.retrofit
 
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -10,8 +10,8 @@ class AuthInterceptor: Interceptor {
         val modifiedUrl = originalRequest
             .url
             .newBuilder()
-            .addQueryParameter("key",BuildConfig.API_KEY)
-            .addQueryParameter("days",BuildConfig.DAYS)
+            .addQueryParameter("key", BuildConfig.API_KEY)
+            .addQueryParameter("days", BuildConfig.DAYS)
             .build()
 
         val modifiedRequest = originalRequest.newBuilder()

@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,8 +25,8 @@ class WeatherViewModel @Inject constructor(
     private val forecastsByHourRepository: ForecastsByHourRepository
 ) : ViewModel() {
 
-    private val _weatherUiState = MutableStateFlow(WeatherUiState())
-    val weatherUiState: StateFlow<WeatherUiState> = _weatherUiState.asStateFlow()
+    private val _weatherState = MutableStateFlow(WeatherState())
+    val weatherState: StateFlow<WeatherState> = _weatherState.asStateFlow()
 
     private val _forecastEntities = MutableStateFlow<List<ForecastEntity>>(emptyList())
     val forecastEntities: StateFlow<List<ForecastEntity>> = _forecastEntities.asStateFlow()
@@ -36,7 +35,7 @@ class WeatherViewModel @Inject constructor(
     val allForecastsByHour: StateFlow<List<ForecastByHourEntity>> = _allForecastsByHour.asStateFlow()
 
     fun resetWeatherForecastsByLocation() {
-        _weatherUiState.update {
+        _weatherState.update {
             it.copy(allForecasts = emptyFlow())
         }
     }
@@ -53,8 +52,7 @@ class WeatherViewModel @Inject constructor(
                 }
             }
 
-
-            _weatherUiState.update {
+            _weatherState.update {
                 it.copy(allForecasts = forecasts)
             }
         }
@@ -68,14 +66,14 @@ class WeatherViewModel @Inject constructor(
                 _allForecastsByHour.value = it
             }
 
-            /*_weatherUiState.update {
+            _weatherState.update {
                 it.copy(allForecastsByHour = allForecastsByHour)
-            }*/
+            }
         }
     }
 }
 
-data class WeatherUiState(
+data class WeatherState(
     val allForecasts: Flow<Resource<List<ForecastEntity>>> = emptyFlow(),
     val allForecastsByHour: Flow<List<ForecastByHourEntity>> = emptyFlow()
 )

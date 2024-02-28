@@ -90,7 +90,7 @@ fun WeatherAppTopBar(
                 AnimatedVisibility(
                     visible = isHomeScreen,
                 ) {
-                    Text(
+                    AnimatedText(
                         text = description,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Bold,

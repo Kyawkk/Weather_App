@@ -111,7 +111,8 @@ fun NavigationHost(
             }
             WeatherScreen(
                 isDay = sharedUiState.isDay,
-                city = city
+                city = city,
+                onUpdateTitle = sharedUiViewModel::updateDescription
             )
         }
 

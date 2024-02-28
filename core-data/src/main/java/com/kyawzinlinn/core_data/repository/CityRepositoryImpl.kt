@@ -4,7 +4,7 @@ import com.kyawzinlinn.core_database.dao.CityDao
 import com.kyawzinlinn.core_database.entities.CityEntity
 import com.kyawzinlinn.core_network.model.City
 import com.kyawzinlinn.core_network.repository.WeatherNetworkDataSource
-import com.kyawzinlinn.core_network.retrofit.RetrofitNetworkApi
+import com.kyawzinlinn.core_network.util.retrofit.RetrofitNetworkApi
 import com.kyawzinlinn.core_network.util.Resource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject

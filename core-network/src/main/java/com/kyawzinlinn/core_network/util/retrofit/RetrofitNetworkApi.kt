@@ -1,4 +1,4 @@
-package com.kyawzinlinn.core_network.retrofit
+package com.kyawzinlinn.core_network.util.retrofit
 
 import com.kyawzinlinn.core_network.model.City
 import com.kyawzinlinn.core_network.model.WeatherForecastResponse

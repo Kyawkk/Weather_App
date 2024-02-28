@@ -5,6 +5,7 @@
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
     ExperimentalFoundationApi::class, ExperimentalFoundationApi::class
 )
 
@@ -37,25 +38,43 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.kyawzinlinn.core_database.entities.ForecastByHourEntity
 import com.kyawzinlinn.core_database.entities.ForecastEntity
 import com.kyawzinlinn.core_navigation.WeatherNavigationDestination
+import com.kyawzinlinn.core_network.util.Resource
 import com.kyawzinlinn.core_ui.SliderDotIndicator
 import com.kyawzinlinn.feature_weather.WeatherViewModel
+import kotlinx.coroutines.flow.collect
 
 object WeatherHomeNavigation : WeatherNavigationDestination {
     override val route: String = "weather_home"
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WeatherScreen(
     city: String,
     isDay: Boolean,
     modifier: Modifier = Modifier,
+    onUpdateTitle: (String) -> Unit,
     weatherViewModel: WeatherViewModel = hiltViewModel(),
 ) {
+    val TAG = "WeatherScreen"
     val allWeatherForecasts by weatherViewModel.forecastEntities.collectAsState()
     val allForecastsByHour by weatherViewModel.allForecastsByHour.collectAsState()
+    val weatherState by weatherViewModel.weatherState.collectAsState()
     val pagerState = rememberPagerState(0) { allWeatherForecasts.size }
 
     LaunchedEffect(Unit) { weatherViewModel.getWeatherForecastsByLocation(city) }
+
+    LaunchedEffect(weatherState.allForecasts, pagerState.currentPage) {
+        weatherState.allForecasts.collect {
+            when (it) {
+                is Resource.Success -> {
+                    onUpdateTitle(allWeatherForecasts[pagerState.currentPage].date)
+                }
+
+                else -> {}
+            }
+        }
+    }
 
     WeatherContentPager(
         weatherForecastEntities = allWeatherForecasts,
@@ -93,7 +112,7 @@ fun WeatherContentPager(
         if (weatherForecasts.isNotEmpty()) refreshForecastsByHour(weatherForecasts[pagerState.currentPage].date)
     }
 
-    Column (modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             SliderDotIndicator(
                 totalCount = pageCount,

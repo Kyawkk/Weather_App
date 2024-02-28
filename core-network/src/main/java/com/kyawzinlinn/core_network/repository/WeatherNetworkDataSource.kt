@@ -2,7 +2,7 @@ package com.kyawzinlinn.core_network.repository
 
 import com.kyawzinlinn.core_network.model.City
 import com.kyawzinlinn.core_network.model.WeatherForecastResponse
-import com.kyawzinlinn.core_network.retrofit.RetrofitNetworkApi
+import com.kyawzinlinn.core_network.util.retrofit.RetrofitNetworkApi
 import javax.inject.Inject
 
 class WeatherNetworkDataSource @Inject constructor (

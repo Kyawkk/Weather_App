@@ -65,7 +65,7 @@ dependencies {
     moduleImplementation(":core-ui")
     moduleImplementation(":core-design")
 
-    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

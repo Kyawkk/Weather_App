@@ -2,9 +2,9 @@ package com.kyawzinlinn.core_network.di
 
 import com.kyawzinlinn.core_network.repository.WeatherNetworkDataSource
 import com.kyawzinlinn.core_network.repository.WeatherRepository
-import com.kyawzinlinn.core_network.retrofit.AuthInterceptor
-import com.kyawzinlinn.core_network.retrofit.BuildConfig
-import com.kyawzinlinn.core_network.retrofit.RetrofitNetworkApi
+import com.kyawzinlinn.core_network.util.retrofit.AuthInterceptor
+import com.kyawzinlinn.core_network.util.retrofit.BuildConfig
+import com.kyawzinlinn.core_network.util.retrofit.RetrofitNetworkApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
