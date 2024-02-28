@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.kyawzinlinn.weatherapp.ui.theme.poppinsFontFamily
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherAppTopBar(
     backgroundColor: Color,
@@ -89,7 +90,7 @@ fun WeatherAppTopBar(
                 AnimatedVisibility(
                     visible = isHomeScreen,
                 ) {
-                    AnimatedText(
+                    Text(
                         text = description,
                         fontFamily = poppinsFontFamily,
                         fontWeight = FontWeight.Bold,

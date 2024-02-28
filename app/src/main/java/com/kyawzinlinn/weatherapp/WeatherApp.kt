@@ -37,7 +37,6 @@ import com.kyawzinlinn.weatherapp.ui.theme.WeatherAppTheme
 fun WeatherApp(
     modifier: Modifier = Modifier
 ) {
-    val weatherViewModel: WeatherViewModel = hiltViewModel()
     val sharedUiViewModel: SharedUiViewModel = hiltViewModel()
     val cityViewModel: CityViewModel = hiltViewModel()
 
@@ -97,7 +96,6 @@ fun WeatherApp(
                     NavigationHost(
                         navController = navController,
                         sharedUiViewModel = sharedUiViewModel,
-                        weatherViewModel = weatherViewModel,
                         cityViewModel = cityViewModel,
                         modifier = Modifier
                             .fillMaxSize()

@@ -53,8 +53,6 @@ android {
 }
 
 dependencies {
-
-    implementation(project(":core-ui"))
     composeNavigation()
     daggerHilt()
     coil()
@@ -66,6 +64,8 @@ dependencies {
     moduleImplementation(":core-database")
     moduleImplementation(":core-ui")
     moduleImplementation(":core-design")
+
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)

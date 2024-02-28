@@ -26,11 +26,10 @@ fun convertDateToDay(date: String): String {
     return "$dayOfWeek, $monthName"
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun getHourFromDateTime(dateTime: String): String {
-    return dateTime.split(" ").last()
+fun getHourFromDateTime(dateTime: String?): String {
+    return dateTime?.split(" ")?.last() ?: ""
 }
 
-fun String.removeDecimalPlace() : String {
-    return this.toFloat().toInt().toString()
+fun String?.removeDecimalPlace() : String {
+    return this?.toFloat()?.toInt().toString() ?: "0.0"
 }

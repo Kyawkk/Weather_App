@@ -21,16 +21,19 @@ class OfflineFirstForecastRepository @Inject constructor(
     private val forecastByHourDao: ForecastByHourDao,
     private val forecastDao: ForecastDao
 ) : ForecastRepository {
-
+    companion object {
+        const val TAG = "OfflineFirstForecastRepository"
+    }
     override suspend fun deleteAll() = forecastDao.deleteAll()
     override suspend fun getAllForecasts(location: String): Flow<Resource<List<ForecastEntity>>> = flow {
         val cachedForecasts = forecastDao.getAllForecasts(location).first()
 
-        if (cachedForecasts.isEmpty() || cachedForecasts.size == 0) emit(Resource.Loading)
+        if (cachedForecasts.isEmpty()) emit(Resource.Loading)
         else emit(Resource.Success(cachedForecasts))
 
         try {
             val networkForecasts = networkDataSource.getWeatherForecasts(location)
+            Log.d(TAG, "getAllForecasts: $networkForecasts")
             forecastDao.insertAllData(forecastByHourDao,networkForecasts.toForecastEntityList(), networkForecasts.toForecastByHourEntityList())
             emit(Resource.Success(networkForecasts.toForecastEntityList()))
 

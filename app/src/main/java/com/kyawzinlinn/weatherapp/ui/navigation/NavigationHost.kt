@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package com.kyawzinlinn.weatherapp.ui.navigation
 
@@ -14,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,32 +39,31 @@ import kotlinx.coroutines.withContext
 @Composable
 fun NavigationHost(
     sharedUiViewModel: SharedUiViewModel,
-    weatherViewModel: WeatherViewModel,
     cityViewModel: CityViewModel,
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val sharedUiState by sharedUiViewModel.uiState.collectAsState()
-    val weatherUiState by weatherViewModel.weatherUiState.collectAsState()
     val cityUiState by cityViewModel.cityUiState.collectAsState()
 
-    val forecastState by weatherUiState.allForecasts.collectAsState(Resource.Loading)
-    val allForecastsByHour by weatherUiState.allForecastsByHour.collectAsState(emptyList())
+    /*val forecastState by weatherUiState.allForecasts.collectAsState(Resource.Loading)
+    val allForecastsByHour by weatherUiState.allForecastsByHour.collectAsState(emptyList())*/
 
     NavHost(
         navController = navController,
         modifier = modifier,
         startDestination = SearchCityNavigationDestination.route
     ) {
-        composable(WeatherHomeNavigation.route) {
+        composable(WeatherHomeNavigation.route + "/{city}") {
 
             var title by rememberSaveable { mutableStateOf("") }
-            var allWeatherForecasts by remember { mutableStateOf(emptyList<ForecastEntity>()) }
+            val city = it?.arguments?.getString("city") ?: ""
+            /*val allWeatherForecasts by weatherViewModel.forecastEntities.collectAsStateWithLifecycle()
 
             val pagerState = rememberPagerState(0) { allWeatherForecasts.size }
 
             LaunchedEffect(pagerState.currentPage) {
-                withContext(Dispatchers.IO) {
+                *//*withContext(Dispatchers.IO) {
                     if (allWeatherForecasts.size != 0) {
                         sharedUiViewModel.updateDescription(
                             convertDateToDay(
@@ -70,10 +73,10 @@ fun NavigationHost(
                             )
                         )
                     }
-                }
-            }
+                }*//*
+            }*/
 
-            LaunchedEffect(forecastState) {
+            /*LaunchedEffect(forecastState) {
                 when (forecastState) {
                     is Resource.Loading -> {
                         sharedUiViewModel.apply {
@@ -100,26 +103,15 @@ fun NavigationHost(
                         sharedUiViewModel.updateScreenStatus(isWeatherScreen = false)
                     }
                 }
-            }
+            }*/
 
             sharedUiViewModel.apply {
                 updateTitle(title)
                 updateScreenStatus(isWeatherScreen = true)
             }
             WeatherScreen(
-                allWeatherForecastState = forecastState,
-                allForecastsByHour = allForecastsByHour,
                 isDay = sharedUiState.isDay,
-                pagerState = pagerState,
-                refreshForecastsByHour = {
-                    weatherViewModel.getAllForecastsByHour(it)
-                },
-                onRetry = {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        weatherViewModel.resetWeatherForecastsByLocation()
-                        weatherViewModel.getWeatherForecastsByLocation(sharedUiState.title)
-                    }
-                }
+                city = city
             )
         }
 
@@ -144,9 +136,7 @@ fun NavigationHost(
                 },
                 onCityItemClick = {
                     cityViewModel.addCity(it)
-                    weatherViewModel.getWeatherForecastsByLocation(it.name)
-                    Log.d("TAG", "CityName: ${it.name}")
-                    navController.navigate(WeatherHomeNavigation.route)
+                    navController.navigate(WeatherHomeNavigation.route + "/${it.name}")
                 })
         }
     }
