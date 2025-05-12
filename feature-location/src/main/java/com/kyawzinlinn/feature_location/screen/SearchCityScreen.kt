@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -64,7 +65,7 @@ fun SearchCityScreen(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var shouldShowSuqggestions by remember { mutableStateOf(false) }
+    var shouldShowSuggestions by remember { mutableStateOf(false) }
     var value by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -89,7 +90,7 @@ fun SearchCityScreen(
             },
             onSearch = onSearch,
             shouldShowSuggestions = {
-                shouldShowSuqggestions = it
+                shouldShowSuggestions = it
             }
         )
         Spacer(Modifier.height(16.dp))
@@ -126,7 +127,7 @@ fun SearchResultList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.imePadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(searchResults) {
@@ -155,7 +156,8 @@ fun SavedCitiesList(
     val context = LocalContext.current
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier.imePadding(),
     ) {
         items(savedCities) {
             Card(
@@ -186,7 +188,7 @@ fun SavedCitiesList(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "${it.name}",
+                                text = it.name,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White,
