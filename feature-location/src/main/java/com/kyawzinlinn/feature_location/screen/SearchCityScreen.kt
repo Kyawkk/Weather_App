@@ -64,7 +64,7 @@ fun SearchCityScreen(
     onSearch: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var shouldShowSuqggestions by remember { mutableStateOf(false) }
+    var shouldShowSuggestions by remember { mutableStateOf(false) }
     var value by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -89,7 +89,7 @@ fun SearchCityScreen(
             },
             onSearch = onSearch,
             shouldShowSuggestions = {
-                shouldShowSuqggestions = it
+                shouldShowSuggestions = it
             }
         )
         Spacer(Modifier.height(16.dp))
