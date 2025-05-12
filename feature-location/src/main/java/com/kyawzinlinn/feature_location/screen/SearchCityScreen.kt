@@ -186,7 +186,7 @@ fun SavedCitiesList(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = "${it.name}",
+                                text = it.name,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.White,
